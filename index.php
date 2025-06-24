@@ -1,0 +1,66 @@
+<?php
+$host = 'localhost';
+$db = 'employees';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+];
+
+$pdo = new PDO($dsn, $user, $pass, $options);
+
+$sql = "
+    SELECT d.dept_no, d.dept_name,
+           CONCAT(e.first_name, ' ', e.last_name) AS manager_name
+    FROM departments d
+    LEFT JOIN dept_manager dm
+        ON d.dept_no = dm.dept_no
+        AND dm.to_date = (SELECT MAX(to_date) FROM dept_manager WHERE dept_no = d.dept_no)
+    LEFT JOIN employees e
+        ON dm.emp_no = e.emp_no
+";
+$stmt = $pdo->query($sql);
+$departments = $stmt->fetchAll();
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Départements</title>
+    <link rel="stylesheet" href="bootstrap-5.3.5-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2 class="text-center my-4">Liste des Départements</h2>
+    <div class="container">
+        <table class="table table-hover table-bordered align-middle shadow">
+            <thead class="table-primary">
+                <tr>
+                    <th>Numéro</th>
+                    <th>Nom du département</th>
+                    <th>Manager en cours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($departments as $dept): ?>
+                    <tr class="zoom-hover">
+                        <td>
+                            <a href="employe.php?dept_no=<?= urlencode($dept['dept_no']) ?>">
+                                <?= htmlspecialchars($dept['dept_no']) ?>
+                            </a>
+                        </td>
+                        <td><?= htmlspecialchars($dept['dept_name']) ?></td>
+                        <td><?= htmlspecialchars($dept['manager_name'] ?? 'Aucun') ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
