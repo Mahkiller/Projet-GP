@@ -1,22 +1,29 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "employees";
+require_once 'Connection.php';
 
-$conn = mysqli_connect($host, $user, $pass, $db);
+$conn = dbconnect();
 
-$dept_no = $_GET['dept_no'];
+if (!isset($_GET['dept_no'])) {
+    die('Aucun département sélectionné.');
+}
+$dept_no = mysqli_real_escape_string($conn, $_GET['dept_no']);
 
 $sql = "SELECT e.emp_no, e.first_name, e.last_name, e.hire_date
-FROM employees e, dept_emp de
-WHERE e.emp_no = de.emp_no AND de.dept_no = '$dept_no'
+FROM employees e
+JOIN dept_emp de ON e.emp_no = de.emp_no
+WHERE de.dept_no = '$dept_no'
 ORDER BY e.last_name, e.first_name";
 
 $result = mysqli_query($conn, $sql);
+if (!$result) {
+    die('Erreur SQL : ' . mysqli_error($conn));
+}
 
 $dept_sql = "SELECT dept_name FROM departments WHERE dept_no = '$dept_no'";
 $dept_result = mysqli_query($conn, $dept_sql);
+if (!$dept_result) {
+    die('Erreur SQL : ' . mysqli_error($conn));
+}
 $dept = mysqli_fetch_assoc($dept_result);
 ?>
 <!DOCTYPE html>
@@ -24,8 +31,8 @@ $dept = mysqli_fetch_assoc($dept_result);
 <head>
     <title>Employés du département</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="bootstrap-5.3.5-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="Style.css">
 </head>
 <body>
     <h2 class="text-center my-4">
@@ -58,3 +65,6 @@ $dept = mysqli_fetch_assoc($dept_result);
     </div>
 </body>
 </html>
+<?php
+mysqli_close($conn);
+?>

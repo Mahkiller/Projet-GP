@@ -1,18 +1,6 @@
 <?php
-$host = 'localhost';
-$db = 'employees';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-];
-
-$pdo = new PDO($dsn, $user, $pass, $options);
+require_once 'Connection.php';
+$conn = dbconnect();
 
 $sql = "
     SELECT d.dept_no, d.dept_name,
@@ -24,8 +12,12 @@ $sql = "
     LEFT JOIN employees e
         ON dm.emp_no = e.emp_no
 ";
-$stmt = $pdo->query($sql);
-$departments = $stmt->fetchAll();
+$result = mysqli_query($conn, $sql);
+
+$departments = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $departments[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -33,8 +25,8 @@ $departments = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Liste des Départements</title>
-    <link rel="stylesheet" href="bootstrap-5.3.5-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="Style.css">
 </head>
 <body>
     <h2 class="text-center my-4">Liste des Départements</h2>
@@ -64,3 +56,7 @@ $departments = $stmt->fetchAll();
     </div>
 </body>
 </html>
+
+<?php
+mysqli_close($conn);
+?>
