@@ -1,3 +1,9 @@
+<!-- modifier ici-->
+ <?php 
+ include('../inc/fonction.php');
+ ?>
+<!---->
+
 <?php
 require_once 'Connection.php';
 
@@ -24,6 +30,7 @@ $dept_result = mysqli_query($conn, $dept_sql);
 if (!$dept_result) {
     die('Erreur SQL : ' . mysqli_error($conn));
 }
+
 $dept = mysqli_fetch_assoc($dept_result);
 ?>
 <!DOCTYPE html>
@@ -32,12 +39,28 @@ $dept = mysqli_fetch_assoc($dept_result);
     <title>Employés du département</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="../Style/Style.css">
 </head>
 <body>
     <h2 class="text-center my-4">
         Employés du département <?= htmlspecialchars($dept['dept_name'] ?? $dept_no) ?>
     </h2>
+
+    <!--modifier ici-->
+    <!--bar de recherche -->
+    <div class="container">
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <form action="employe.php" class="d-flex" role="search" method="get">
+            <input class="form-control me-2" type="search" name="nom" placeholder="Search" aria-label="Search">
+            <input type="hidden" value=<?php echo $dept_no; ?> name="dept_no">
+            <button class="btn" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    </div>
+    <!---->
+
     <div class="container">
         <table class="table table-hover table-bordered align-middle shadow">
             <thead class="table-primary">
@@ -49,14 +72,43 @@ $dept = mysqli_fetch_assoc($dept_result);
                 </tr>
             </thead>
             <tbody>
+        <!-- modifier ici-->
+         <?php if(!isset($_GET['nom'])) { ?>
+        <!---->
                 <?php while($row = mysqli_fetch_assoc($result)): ?>
                     <tr class="zoom-hover">
-                        <td><?= htmlspecialchars($row['emp_no']) ?></td>
+                       <td>
+                            <a href="Fiche.php?emp_no=<?= urlencode($row['emp_no']) ?>">
+                                <?= htmlspecialchars($row['emp_no']) ?>
+                            </a>
+                        </td>
                         <td><?= htmlspecialchars($row['first_name']) ?></td>
                         <td><?= htmlspecialchars($row['last_name']) ?></td>
                         <td><?= htmlspecialchars($row['hire_date']) ?></td>
                     </tr>
                 <?php endwhile; ?>
+        <!-- modifier ici-->
+        <?php } ?>
+        <?php if(isset($_GET['nom'])){ ?>
+            <?php
+                $search=$_GET['nom'];
+                $request=verifieSearch($dept_no,$search);
+            ?>
+             <?php while($row = mysqli_fetch_assoc($request)): ?>
+                <tr class="zoom-hover">
+                    <td>
+                        <a href="Fiche.php?emp_no=<?= urlencode($row['emp_no']) ?>">
+                            <?= htmlspecialchars($row['emp_no']) ?>
+                        </a>
+                    </td>
+                    <td><?= htmlspecialchars($row['first_name']) ?></td>
+                    <td><?= htmlspecialchars($row['last_name']) ?></td>
+                    <td><?= htmlspecialchars($row['hire_date']) ?></td>
+                </tr>
+            <?php endwhile; ?>
+        <?php } ?>
+        <!---->
+        
             </tbody>
         </table>
         <div class="text-center mb-4">
