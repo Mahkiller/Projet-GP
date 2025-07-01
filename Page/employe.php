@@ -12,11 +12,21 @@ if (!isset($_GET['dept_no'])) {
 }
 $dept_no = mysqli_real_escape_string($conn, $_GET['dept_no']);
 
+$limit = 20;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($page - 1) * $limit;
+
+$sqlCount = "SELECT COUNT(*) as total FROM employees e JOIN dept_emp de ON e.emp_no = de.emp_no WHERE de.dept_no = '$dept_no'";
+$resCount = mysqli_query($conn, $sqlCount);
+$totalRows = mysqli_fetch_assoc($resCount)['total'];
+$hasNext = $offset + $limit < $totalRows;
+
 $sql = "SELECT e.emp_no, e.first_name, e.last_name, e.hire_date
 FROM employees e
 JOIN dept_emp de ON e.emp_no = de.emp_no
 WHERE de.dept_no = '$dept_no'
-ORDER BY e.last_name, e.first_name";
+ORDER BY e.last_name, e.first_name
+LIMIT $offset, $limit";
 
 $result = mysqli_query($conn, $sql);
 if (!$result) {
@@ -79,7 +89,6 @@ $dept = mysqli_fetch_assoc($dept_result);
                         <td><?= htmlspecialchars($row['hire_date']) ?></td>
                     </tr>
                 <?php endwhile; ?>
-        <!-- modifier ici-->
         <?php } ?>
         <?php if(isset($_GET['nom'])){ ?>
             <?php
@@ -103,6 +112,21 @@ $dept = mysqli_fetch_assoc($dept_result);
         
             </tbody>
         </table>
+        <div class="d-flex justify-content-between my-3">
+            <?php
+            $params = $_GET;
+            if ($page > 1) {
+                $params['page'] = $page - 1;
+                echo '<a class="btn btn-outline-primary" href="?' . http_build_query($params) . '">Précédent</a>';
+            } else {
+                echo '<span></span>';
+            }
+            if ($hasNext) {
+                $params['page'] = $page + 1;
+                echo '<a class="btn btn-outline-primary" href="?' . http_build_query($params) . '">Suivant</a>';
+            }
+            ?>
+        </div>
         <div class="text-center mb-4">
             <a href="index.php" class="btn btn-primary">Retour à la liste des départements</a>
         </div>

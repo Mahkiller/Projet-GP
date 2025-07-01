@@ -19,7 +19,6 @@ while ($row = mysqli_fetch_assoc($result)) {
     $departments[] = $row;
 }
 
-// Si recherche, afficher les employés correspondants
 if (!empty($_GET['nom']) || !empty($_GET['dept_no']) || !empty($_GET['age_min']) || !empty($_GET['age_max'])) {
     $where = [];
     if (!empty($_GET['dept_no'])) {
@@ -38,13 +37,27 @@ if (!empty($_GET['nom']) || !empty($_GET['dept_no']) || !empty($_GET['age_min'])
         $age_max = (int)$_GET['age_max'];
         $where[] = "TIMESTAMPDIFF(YEAR, e.birth_date, CURDATE()) <= $age_max";
     }
+
+    $limit = 20;
+    $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+    $offset = ($page - 1) * $limit;
+
+    $sqlCount = "SELECT COUNT(*) as total
+        FROM employees e
+        JOIN dept_emp de ON e.emp_no = de.emp_no
+        JOIN departments d ON de.dept_no = d.dept_no
+        ".(count($where) ? "WHERE ".implode(' AND ', $where) : "");
+    $resCount = mysqli_query($conn, $sqlCount);
+    $totalRows = mysqli_fetch_assoc($resCount)['total'];
+    $hasNext = $offset + $limit < $totalRows;
+
     $sqlEmp = "SELECT e.emp_no, e.first_name, e.last_name, e.hire_date, d.dept_name
         FROM employees e
         JOIN dept_emp de ON e.emp_no = de.emp_no
         JOIN departments d ON de.dept_no = d.dept_no
         ".(count($where) ? "WHERE ".implode(' AND ', $where) : "")."
         ORDER BY e.last_name, e.first_name
-        LIMIT 100";
+        LIMIT $offset, $limit";
     $resEmp = mysqli_query($conn, $sqlEmp);
     ?>
     <div class="container">
@@ -71,9 +84,23 @@ if (!empty($_GET['nom']) || !empty($_GET['dept_no']) || !empty($_GET['age_min'])
                 <?php endwhile; ?>
             </tbody>
         </table>
+        <div class="d-flex justify-content-between my-3">
+            <?php
+            $params = $_GET;
+            if ($page > 1) {
+                $params['page'] = $page - 1;
+                echo '<a class="btn btn-outline-primary" href="?' . http_build_query($params) . '">Précédent</a>';
+            } else {
+                echo '<span></span>';
+            }
+            if ($hasNext) {
+                $params['page'] = $page + 1;
+                echo '<a class="btn btn-outline-primary" href="?' . http_build_query($params) . '">Suivant</a>';
+            }
+            ?>
+        </div>
     </div>
     <?php
-    // On n'affiche pas la liste des départements si recherche
     return;
 }
 ?>
@@ -121,7 +148,6 @@ if (!empty($_GET['nom']) || !empty($_GET['dept_no']) || !empty($_GET['age_min'])
         </form>
     </div>
     <script>
-    // Autocomplete AJAX
     document.getElementById('nom').addEventListener('input', function() {
         let nom = this.value;
         let dept = document.getElementById('dept_no').value;
@@ -139,7 +165,6 @@ if (!empty($_GET['nom']) || !empty($_GET['dept_no']) || !empty($_GET['age_min'])
                 document.getElementById('suggestions').innerHTML = sug;
             });
     });
-    // Hide suggestions on blur
     document.getElementById('nom').addEventListener('blur', function() {
         setTimeout(() => { document.getElementById('suggestions').innerHTML = ''; }, 200);
     });
