@@ -93,7 +93,7 @@ $dept = mysqli_fetch_assoc($dept_result);
         <?php if(isset($_GET['nom'])){ ?>
             <?php
                 $search=$_GET['nom'];
-                $request=verifieSearch($dept_no,$search);
+                $request=verifieSearch2($dept_no,$search);
             ?>
              <?php while($row = mysqli_fetch_assoc($request)): ?>
                 <tr class="zoom-hover">
