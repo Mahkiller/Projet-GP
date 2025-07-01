@@ -1,8 +1,6 @@
-<!-- modifier ici-->
- <?php 
- include('../inc/fonction.php');
- ?>
-<!---->
+<?php 
+include('../inc/fonction.php');
+?>
 
 <?php
 require_once 'Connection.php';
@@ -46,8 +44,6 @@ $dept = mysqli_fetch_assoc($dept_result);
         Employés du département <?= htmlspecialchars($dept['dept_name'] ?? $dept_no) ?>
     </h2>
 
-    <!--modifier ici-->
-    <!--bar de recherche -->
     <div class="container">
     <nav class="navbar bg-body-tertiary">
         <div class="container-fluid">
@@ -59,8 +55,6 @@ $dept = mysqli_fetch_assoc($dept_result);
         </div>
     </nav>
     </div>
-    <!---->
-
     <div class="container">
         <table class="table table-hover table-bordered align-middle shadow">
             <thead class="table-primary">
@@ -72,9 +66,7 @@ $dept = mysqli_fetch_assoc($dept_result);
                 </tr>
             </thead>
             <tbody>
-        <!-- modifier ici-->
          <?php if(!isset($_GET['nom'])) { ?>
-        <!---->
                 <?php while($row = mysqli_fetch_assoc($result)): ?>
                     <tr class="zoom-hover">
                        <td>
