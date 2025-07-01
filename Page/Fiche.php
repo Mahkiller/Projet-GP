@@ -1,23 +1,17 @@
 <?php
-require_once 'Connection.php';
-$conn = dbconnect();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once '../traitements/traitement_Fiche.php';
 
 if (!isset($_GET['emp_no'])) {
     die('Aucun employé sélectionné.');
 }
-$emp_no = mysqli_real_escape_string($conn, $_GET['emp_no']);
-
-$sql = "SELECT e.*, t.title, s.salary
-        FROM employees e
-        LEFT JOIN titles t ON e.emp_no = t.emp_no AND (t.to_date IS NULL OR t.to_date = (SELECT MAX(to_date) FROM titles WHERE emp_no = e.emp_no))
-        LEFT JOIN salaries s ON e.emp_no = s.emp_no AND s.to_date = (SELECT MAX(to_date) FROM salaries WHERE emp_no = e.emp_no)
-        WHERE e.emp_no = '$emp_no'
-        LIMIT 1";
-$result = mysqli_query($conn, $sql);
-if (!$result || mysqli_num_rows($result) == 0) {
+$emp = getEmployeFiche($_GET['emp_no']);
+if (!$emp) {
     die('Employé introuvable.');
 }
-$emp = mysqli_fetch_assoc($result);
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,6 +22,7 @@ $emp = mysqli_fetch_assoc($result);
     <link rel="stylesheet" href="../Style/Style.css">
 </head>
 <body>
+    <?php include_once '../inc/navbar.php'; ?>
     <h2 class="text-center my-4">Fiche de l'employé</h2>
     <div class="container" style="max-width:600px;">
         <table class="table table-bordered">
@@ -46,6 +41,3 @@ $emp = mysqli_fetch_assoc($result);
     </div>
 </body>
 </html>
-<?php
-mysqli_close($conn);
-?>

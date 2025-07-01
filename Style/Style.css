@@ -67,6 +67,16 @@ div[style*="text-align:center"] {
     margin-bottom: 40px;
 }
 
+.zoom-btn {
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+.zoom-btn:hover {
+    transform: scale(1.08);
+    z-index: 2;
+}
+
 @media (max-width: 900px) {
     table, th, td {
         font-size: 15px;
