@@ -69,25 +69,28 @@ $dept_name = getDeptName($dept_no, $conn);
             <tbody>
          <?php if(!isset($_GET['nom'])) { ?>
                 <?php while($row = mysqli_fetch_assoc($result)): ?>
-                    <tr class="zoom-hover">
-                       <td>
-                            <a href="Fiche.php?emp_no=<?= urlencode($row['emp_no']) ?>">
-                                <?= htmlspecialchars($row['emp_no']) ?>
-                            </a>
-                        </td>
+                    <tr>
+                        <td><?= htmlspecialchars($row['emp_no']) ?></td>
                         <td><?= htmlspecialchars($row['first_name']) ?></td>
                         <td><?= htmlspecialchars($row['last_name']) ?></td>
                         <td><?= htmlspecialchars($row['hire_date']) ?></td>
+                        <td>
+                            <a href="Fiche.php?emp_no=<?= urlencode($row['emp_no']) ?>" class="btn btn-success zoom-btn">
+                                Voir la fiche
+                            </a>
+                        </td>
                     </tr>
                 <?php endwhile; ?>
         <?php } ?>
         <?php if(isset($_GET['nom'])){ ?>
             <?php
-                $search=$_GET['nom'];
-                $request=verifieSearch($dept_no,$search);
+                $search = mysqli_real_escape_string($conn, $_GET['nom']);
+                $dept_no_sql = mysqli_real_escape_string($conn, $dept_no);
+                $sql = "SELECT * FROM v_employees_dept WHERE dept_no = '$dept_no_sql' AND (first_name LIKE '%$search%' OR last_name LIKE '%$search%')";
+                $request = mysqli_query($conn, $sql);
             ?>
              <?php while($row = mysqli_fetch_assoc($request)): ?>
-                <tr class="zoom-hover">
+                <tr>
                     <td>
                         <a href="Fiche.php?emp_no=<?= urlencode($row['emp_no']) ?>">
                             <?= htmlspecialchars($row['emp_no']) ?>
@@ -96,6 +99,11 @@ $dept_name = getDeptName($dept_no, $conn);
                     <td><?= htmlspecialchars($row['first_name']) ?></td>
                     <td><?= htmlspecialchars($row['last_name']) ?></td>
                     <td><?= htmlspecialchars($row['hire_date']) ?></td>
+                    <td>
+                        <a href="Fiche.php?emp_no=<?= urlencode($row['emp_no']) ?>" class="btn btn-success zoom-btn">
+                            Voir la fiche
+                        </a>
+                    </td>
                 </tr>
             <?php endwhile; ?>
         <?php } ?>
