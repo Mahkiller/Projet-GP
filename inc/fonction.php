@@ -18,31 +18,38 @@
  }
 
  function verifieSearch2($dept_no,$search){
-    // nom des colonnes dans view_employees_dept;
-    $colones=mysqli_fetch_fields(getView_emp_dept());
+    $conn = dbconnect(); 
+    $colonnes = mysqli_fetch_fields(getView_emp_dept());
 
-    foreach($colones as $c){
-        if($c-> name !="emp_no"){
-            $sql=sprintf("SELECT*FROM v_employees_dept where %s='%s' and dept_no='%s'",
-            $c-> name,
-            $search,
-            $dept_no);
-            $request=mysqli_query(dbconnect(), $sql);
-            if($request){
-                return $request;
+    foreach ($colonnes as $c) {
+        $column = $c->name;
+
+        // Vérifie si la colonne actuelle est celle qu'on cherche à filtrer
+        if ($column != 'emp_no' && is_string($search)) {
+            $sql = "SELECT * FROM v_employees_dept WHERE $column = ? AND dept_no = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, 'ss', $search, $dept_no); 
+
+        } elseif ($column == 'emp_no' && is_numeric($search)) {
+            $sql = "SELECT * FROM v_employees_dept WHERE $column = ? AND dept_no = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, 'is', $search, $dept_no);
+
+        } else {
+            continue;
+        }
+
+        // Exécute et retourne le résultat
+        if (mysqli_stmt_execute($stmt)) { // ??
+            $result = mysqli_stmt_get_result($stmt);
+            if ($result && mysqli_num_rows($result) > 0) {
+                return $result; // Retourne les résultats
             }
         }
-        else if($c-> name=="emp_no"){
-            $sql=sprintf("SELECT*FROM v_employees_dept where %s='%d' and dept_no='%s'",
-            $c-> name,
-            $search,
-            $dept_no);
-            $request=mysqli_query(dbconnect(), $sql);
-            if($request){
-                return $request;
-            }
-        }
+
+        mysqli_stmt_close($stmt); // Ferme le statement à chaque itération
     }
-    
+
+    return null; // Aucun résultat
  }
 ?>
