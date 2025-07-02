@@ -89,6 +89,9 @@ LEFT JOIN (
 -- Liste des managers de département
 -- SELECT * FROM v_manager_departement;
 
+-- -> utiliser le view ici
+-- SELECT dept_no, dept_name, CONCAT(first_name,' ',last_name) as manager_name from v_manager_departement;
+
 -- Liste des employés d'un département
 -- SELECT * FROM v_employees_dept WHERE dept_no = 'd001';
 
