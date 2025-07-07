@@ -12,8 +12,8 @@ $departments = getDepartments();
 <head>
     <meta charset="UTF-8">
     <title>Liste des Départements</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../Style/Style.css">
+    <link rel="stylesheet" href="/Php/EmployeV2/Projet-GP/Style/bootstrap.min.css">
+    <link rel="stylesheet" href="/Php/EmployeV2/Projet-GP/Style/Style.css">
     <style>
         .zoom-btn:hover {
             transform: scale(1.08);

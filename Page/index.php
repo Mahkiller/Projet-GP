@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Accueil</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../Style/Style.css">
+    <link rel="stylesheet" href="/Php/EmployeV2/Projet-GP/Style/bootstrap.min.css">
+    <link rel="stylesheet" href="/Php/EmployeV2/Projet-GP/Style/Style.css">
 </head>
 <body>
     <?php include_once '../inc/navbar.php'; ?>
