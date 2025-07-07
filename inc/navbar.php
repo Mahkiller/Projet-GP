@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
   <div class="container">
     <a class="navbar-brand" href="index.php">Employés</a>
@@ -16,6 +15,9 @@
         </li>
         <li class="nav-item">
           <a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'recherche.php' ? ' active' : '' ?>" href="recherche.php">Recherche</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'stats_titre.php' ? ' active' : '' ?>" href="stats_titre.php">Stats Emplois</a>
         </li>
       </ul>
     </div>

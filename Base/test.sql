@@ -76,7 +76,7 @@ SELECT e.emp_no, e.first_name, e.last_name, e.birth_date, e.gender, e.hire_date,
 FROM employees e
 LEFT JOIN (
     SELECT emp_no, title
-    FROM titles
+    FROM
     WHERE to_date = (SELECT MAX(to_date) FROM titles WHERE emp_no = titles.emp_no)
 ) t ON e.emp_no = t.emp_no
 LEFT JOIN (
